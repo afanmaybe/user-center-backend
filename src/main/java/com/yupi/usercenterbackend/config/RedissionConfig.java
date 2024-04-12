@@ -1,0 +1,35 @@
+package com.yupi.usercenterbackend.config;
+
+import lombok.Data;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * @description:
+ * @author: afan
+ * @create: 2024/1/12 0:35
+ */
+@Configuration
+@ConfigurationProperties(prefix = "spring.redis")
+@Data
+public class RedissionConfig {
+
+    private String host;
+    private String port;
+
+    @Bean
+    public RedissonClient redissionClient(){
+        // 1. 创建配置
+        Config config = new Config();
+        // 使用单个Redis，没有开集群 useClusterServers()  设置地址和使用库
+        String redisAddress = String.format("redis://%s:%s",host,port);
+        config.useSingleServer().setAddress(redisAddress).setDatabase(3);
+        // 2. 创建实例
+        RedissonClient redission = Redisson.create(config);
+        return redission;
+    }
+}
